@@ -101,9 +101,9 @@ class Serialization
     }
 
     private <T> void Append(T value) {
-        Append(value);
+        _storage.add(value);
     }
-
+    
     public Serialization Add(boolean value) {
         Append(value);
         return this;
@@ -139,13 +139,13 @@ class Serialization
         return this;
     }
 
-    public Serialization Add(final String value) {
-        Append(value, value.length());
+    public Serialization Add(String value) {
+        Append(value);
         return this;
     }
 
     public Serialization Add(char[] str) {
-        Append(String.valueOf(str), str.length);		
+        Append(String.valueOf(str));		
         return this;
     }
 
@@ -160,7 +160,7 @@ class Serialization
     }
 
     public Serialization of(short value) {
-        value = Read(value)
+        value = Read(value);
         return this;
     }
 
@@ -319,12 +319,4 @@ class Serialization
     public boolean Empty() { 
 		return _storage.isEmpty();
 	}
-
-    private void Append(String str) {
-        Append(str, str.length() + 1);
-    }
-
-    private void Append(String src, int cnt) {
-        Append(src, cnt);
-    }
 }
