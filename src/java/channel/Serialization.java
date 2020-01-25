@@ -100,8 +100,13 @@ class Serialization
         this._rpos = this._wpos = 0;
     }
 
-    private <T> void Append(T value) {
+    public <T> void Append(T value) {
         _storage.add(value);
+    }
+
+    // override
+    public <T> T Append(T value) {
+        return value;
     }
     
     public Serialization Add(boolean value) {
