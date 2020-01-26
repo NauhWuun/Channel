@@ -5,7 +5,7 @@ import java.util.Vector;
 
 class Serialization
 {
-	private static final int DEFAULT_SIZE = 0x400;
+    private static final int DEFAULT_SIZE = 0x400;
     private int _rpos = 0, _wpos = 0, ctr = 0;
 
     private Vector<Object> _storage = new Vector<Object>();
@@ -102,11 +102,6 @@ class Serialization
 
     public <T> void Append(T value) {
         _storage.add(value);
-    }
-
-    // override
-    public <T> T Append(T value) {
-        return value;
     }
     
     public Serialization Add(boolean value) {
