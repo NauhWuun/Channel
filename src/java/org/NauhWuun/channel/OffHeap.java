@@ -1,4 +1,4 @@
-package java.channel;
+package org.NauhWuun.channel;
 
 import sun.misc.Unsafe;
 
@@ -24,8 +24,8 @@ public final class OffHeap
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
 
-            UNSAFE   = (Unsafe) field.get(null);
-            JVM_64   = UNSAFE.addressSize() == 8;
+            UNSAFE = (Unsafe) field.get(null);
+            JVM_64 = UNSAFE.addressSize() == 8;
         } catch (Exception e) {
             throw new AssertionError(e);
         }
@@ -64,33 +64,56 @@ public final class OffHeap
     public static long sizeof(Class clazz, Object o) {
         long mem_offset = header_size(clazz);
 
-        if (o == null || clazz == null)
-            return 0;
+        if (o == null)
+            return -1;
 
-        if (clazz.isPrimitive())
-        switch (clazz.getName()) {
-            default:                     return 8;
-            case "long": case "double" : return 8;
-            case "int" : case "float"  : return 4;
-            case "char": case "short"  : return 2;
-            case "byte": case "boolean": return 1;
+        if (clazz.isPrimitive()) {
+            switch (clazz.getName()) {
+                default:
+                    return 8;
+                case "long":
+                case "double":
+                    return 8;
+                case "int":
+                case "float":
+                    return 4;
+                case "char":
+                case "short":
+                    return 2;
+                case "byte":
+                case "boolean":
+                    return 1;
+            }
         }
 
-        if (clazz.isArray())
-        switch (clazz.getName()) {
-            default:     return 8;
-            case "[L":   return 8 * ((long[])    o).length;
-            case "[D":   return 8 * ((double[])  o).length;
-            case "[I":   return 4 * ((int[])     o).length;
-            case "[F":   return 4 * ((float[])   o).length;
-            case "[C":   return 2 * ((char[])    o).length;
-            case "[S":   return 2 * ((short[])   o).length;
-            case "[B":   return 1 * ((byte[])    o).length;
-            case "[Z":   return 1 * ((boolean[]) o).length;
+        if (clazz.isArray()) {
+            switch (clazz.getName()) {
+                default:
+                    return 8;
+                case "[L":
+                    return 8 * ((long[]) o).length;
+                case "[D":
+                    return 8 * ((double[]) o).length;
+                case "[I":
+                    return 4 * ((int[]) o).length;
+                case "[F":
+                    return 4 * ((float[]) o).length;
+                case "[C":
+                    return 2 * ((char[]) o).length;
+                case "[S":
+                    return 2 * ((short[]) o).length;
+                case "[B":
+                    return 1 * ((byte[]) o).length;
+                case "[Z":
+                    return 1 * ((boolean[]) o).length;
+            }
         }
 
         if (clazz.isEnum())
             return 4;
+
+        if (clazz.isLocalClass() || clazz.isInterface())
+            return clazz.getClasses().length;
 
         long obj_offset = 0;
         Field[] fields  = clazz.getDeclaredFields();
@@ -292,6 +315,7 @@ public final class OffHeap
 
     private static long header_size(Class c) {
         long len = (JVM_64) ? 12 : 8;
+
         if (c.isArray()) 
             len += 4;
         

@@ -1,151 +1,100 @@
-package java.channel;
+package org.NauhWuun.channel;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 
 class Serialization
 {
-    private static final int DEFAULT_SIZE = 0x400;
     private int _rpos = 0, _wpos = 0, ctr = 0;
-
-    private Vector<Object> _storage = new Vector<Object>();
+    private Vector<Object> _storage;
 
     public Serialization() {
-        this(DEFAULT_SIZE + 1);
+        _storage = new Vector<>();
     }
-
-    public Serialization(int res) {
-        _storage = new Vector<Object>(res + 1);
-    }
- 	
-	/**
-     * return 
-     *  true(BigEndian)
-     *  false(LittleEndian)
-     */
-	public static boolean MemoryEndian() {
-		char encode_chars = 0x1122;
-		return (String.valueOf(encode_chars).equals(0x11));
-	}
-
-    public static int ChangeEndianSwap(int value) {
-        char[] bytes = String.valueOf(value).toCharArray();
-        return ((int)(bytes[0]) << 3) |
-			   ((int)(bytes[1]) << 2) |
-               ((int)(bytes[2]) << 1) |
-               (int)(bytes[3])		  ;
-    }
-
-    public static long ChangeEndianSwap(long value) {
-        char[] bytes = String.valueOf(value).toCharArray();
-        return ((long)(bytes[0]) << 7) |
-			   ((long)(bytes[1]) << 6) |
-               ((long)(bytes[2]) << 5) |
-               ((long)(bytes[3]) << 4) |
-               ((long)(bytes[4]) << 3) |
-               ((long)(bytes[5]) << 2) |
-               ((long)(bytes[6]) << 1) |
-               (long)(bytes[7])		   ;
-    }
-	
-	/**
-     * Toggle the 16 bit unsigned integer pointed by *p from little endian to big endian
-     * @param p
-     */
-	public static void memrev16(char[] p) {
-		char[] x = (char[]) p;
-        char t;
-
-		t 	 = x[0];
-		x[0] = x[1];
-		x[1] = t;
-	}
-
-	public static void memrev32(char[] p) {
-		char[] x = (char[]) p;
-        char t;
-
-		t 	 = x[0];
-		x[0] = x[3];
-		x[3] = t;
-		
-		t 	 = x[1];
-		x[1] = x[2];
-		x[2] = t;
-	}
- 
-	public static void memrev64(char[] p) {
-		char[] x = (char[]) p;
-        char t;
-
-		t 	 = x[0];
-		x[0] = x[7];
-		x[7] = t;
-		
-		t 	 = x[1];
-		x[1] = x[6];
-		x[6] = t;
-		
-		t 	 = x[2];
-		x[2] = x[5];
-		x[5] = t;
-		
-		t 	 = x[3];
-		x[3] = x[4];
-		x[4] = t;
-	}
 
     public void Clear() {
         this._storage.clear();
         this._rpos = this._wpos = 0;
     }
 
-    public <T> void Append(T value) {
+    private <T> void Append(Class clazz, T value) {
+        long size = sizeof(clazz, value);
+
         _storage.add(value);
+        _wpos += size;
     }
     
     public Serialization Add(boolean value) {
-        Append(value);
+        Append(boolean.class, value);
         return this;
     }
 
     public Serialization Add(char value) {
-        Append(value);
+        Append(char.class, value);
         return this;
     }
 
     public Serialization Add(short value) {
-        Append(value);
+        Append(short.class, value);
         return this;
     }
 
 	public Serialization Add(int value) {
-		Append(value);
+        Append(int.class, value);
 		return this;
 	}
 
     public Serialization Add(long value) {
-        Append(value);
+        Append(long.class, value);
         return this;
     }
 
     public Serialization Add(float value) {
-        Append(value);
+        Append(float.class, value);
         return this;
     }
 
     public Serialization Add(double value) {
-        Append(value);
+        Append(double.class, value);
         return this;
     }
 
     public Serialization Add(String value) {
-        Append(value);
+        Append(String.class, value);
         return this;
     }
 
-    public Serialization Add(char[] str) {
-        Append(String.valueOf(str));		
+    public Serialization Add(char[] value) {
+        Append(value.getClass(), value);
+        return this;
+    }
+
+    public Serialization Add(byte[] value) {
+        Append(value.getClass(), value);
+        return this;
+    }
+
+    public Serialization Add(byte value) {
+        Append(Byte.class, value);
+        return this;
+    }
+
+    public Serialization Add(List list) {
+        Append(List.class, list);
+        return this;
+    }
+
+    public Serialization Add(Map map) {
+        Append(Map.class, map);
+        return this;
+    }
+
+    public Serialization Add(Class classic) {
+        Append(Class.class, classic);
+        return this;
+    }
+
+    public Serialization Add(Vector vector) {
+        Append(Vector.class, vector);
         return this;
     }
 
@@ -189,7 +138,7 @@ class Serialization
 		return this;
     }
 
-    public byte[] BinaryEncrypt(char[] binary) {
+    public byte[] BinaryEncrypt(byte[] binary) {
         byte[] encr = new byte[binary.length + 1];
 
 		ctr = 0;
@@ -218,8 +167,6 @@ class Serialization
  		}
 
  		encr[ctr] = (byte) counter;
-        ctr++;
-        
         return encr;
     }
 
@@ -237,38 +184,19 @@ class Serialization
          
 		return decr;
     }
-    
-    public void reSize(int size) {
-        //
-        // alloc size must less (Integer.MAX_VALUE - 1000), careful [OOM] event.
-        //
-        if (_storage.size() + size > (Integer.MAX_VALUE - 1000) && size < DEFAULT_SIZE)
-            throw new IllegalArgumentException("reSize Value Size Is To Bigger...");
 
-        //
-        // copied src to new dest object
-        //
-        Vector<Object> _storage_ = new Vector<Object>(_storage.size() + size);
-        OffHeap.memcpy(_storage, 0, _storage_, 0, _storage.size());
-        
-        //
-        // review meta object to alloc new size
-        // copied new object to this object
-        //
-        _storage = new Vector<Object>(_storage.size() + size);
-        OffHeap.memcpy(_storage_, 0, _storage, 0, _storage.size() + size);
-    }
-
-    public String toString() {
+    public String toStrings() {
         Iterator<Object> it = _storage.iterator();
         if (! it.hasNext())
             return "";
 
         StringBuilder sb = new StringBuilder();
-        for (;;) {
+        while (it.hasNext()) {
             Object e = it.next();
-            sb.append(e);
+            sb.append(e).append("\t\n");
         }
+
+        return sb.toString();
     }
 
     private int Ros() {
@@ -297,18 +225,18 @@ class Serialization
         return type;
     }
 
-	private <T> T[] ReadArray(long pos) {
+	public <T> T[] ReadArray(int pos) {
         return (T[]) _storage.toArray()[pos];
     }
 
-    private void Read(char[] dest, int len) {
+    public void Read(char[] dest, int len) {
         Read(dest, len, 0);
     }
 
     private void Read(char[] dest, int len, int pos) {
         assert(_rpos + len  <= Size());
 
-        OffHeap.memcpy(_storage, pos, dest, len, len);
+        System.arraycopy(_storage, pos, dest, 0, len);
         _rpos += len;
     }
 
@@ -319,4 +247,60 @@ class Serialization
     public boolean Empty() { 
 		return _storage.isEmpty();
 	}
+
+    public static long sizeof(Class clazz, Object o) {
+        if (clazz.isPrimitive()) {
+            switch (clazz.getName()) {
+                default:
+                    return 8;
+                case "long":
+                case "double":
+                    return 8;
+                case "int":
+                case "float":
+                    return 4;
+                case "char":
+                case "short":
+                    return 2;
+                case "byte":
+                case "boolean":
+                    return 1;
+            }
+        }
+
+        if (clazz.isArray()) {
+            switch (clazz.getName()) {
+                default:
+                    return 4;
+                case "[L":
+                    return 1 * ((long[]) o).length;
+                case "[D":
+                    return 1 * ((double[]) o).length;
+                case "[I":
+                    return 1 * ((int[]) o).length;
+                case "[F":
+                    return 1 * ((float[]) o).length;
+                case "[C":
+                    return 1 * ((char[]) o).length;
+                case "[S":
+                    return 1 * ((short[]) o).length;
+                case "[B":
+                    return 1 * ((byte[]) o).length;
+                case "[Z":
+                    return 1 * ((boolean[]) o).length;
+            }
+        }
+
+        if (clazz.isEnum())
+            return 4;
+
+        if (clazz.isLocalClass() || clazz.isInterface() || clazz.isMemberClass())
+            return clazz.getClasses().length;
+
+        if (clazz.isInstance(Class.class)) {
+            return 0;
+        }
+
+        return 0;
+    }
 }
