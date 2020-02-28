@@ -218,7 +218,7 @@ class Serialization
     }
  
 	private <T> T Read(T type) {
-        long size = OffHeap.sizeof(type.getClass(), type);
+        long size = sizeof(type.getClass(), type);
         type = (T) _storage.get((int) size);
         _rpos += size;
 		
