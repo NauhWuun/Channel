@@ -9,7 +9,7 @@ public class Channel
 {
     public int ssss = 10;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchFieldException {
         Serialization ser = new Serialization();
 
         int a = 10;
@@ -31,27 +31,36 @@ public class Channel
         Map<String, String> map = new HashMap<>();
         map.put("a", "b");
 
-        ser.Add(a);
-        ser.Add(b);
-        ser.Add(c);
-        ser.Add(d);
-        ser.Add(e);
-        ser.Add(f);
-        ser.Add(g);
-        ser.Add(h);
-        ser.Add(i);
-        ser.Add(list);
-        ser.Add(map);
-//        ser.Add(AAA.class);
+//        ser.Add(a);
+//        ser.Add(b);
+//        ser.Add(c);
+//        ser.Add(d);
+//        ser.Add(e);
+//        ser.Add(f);
+//        ser.Add(g);
+//        ser.Add(h);
+//        ser.Add(i);
+//        ser.Add(list);
+//        ser.Add(map);
+        ser.AddClass(AAA.class);
 
         System.out.println( ser.toStrings() );
 
         // Serialization der = new Serialization();
         // System.out.println(der.of());
     }
+}
 
-    class AAA
-    {
+class AAA
+{
+    public int asjdaskjld = 10;
+    public String asd = "asdasdasdasd";
 
+    public void set(int a) {
+        this.asjdaskjld = a;
+    }
+
+    public int get() {
+        return this.asjdaskjld;
     }
 }

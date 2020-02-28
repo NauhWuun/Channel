@@ -22,7 +22,7 @@ class Serialization
         _storage.add(value);
         _wpos += size;
     }
-    
+
     public Serialization Add(boolean value) {
         Append(boolean.class, value);
         return this;
@@ -64,12 +64,20 @@ class Serialization
     }
 
     public Serialization Add(char[] value) {
-        Append(value.getClass(), value);
+        long size = sizeof(value.getClass(), value);
+
+        for (int i = 0; i < size; i++)
+            _storage.add(value[i]);
+        _wpos += size;
         return this;
     }
 
     public Serialization Add(byte[] value) {
-        Append(value.getClass(), value);
+        long size = sizeof(value.getClass(), value);
+
+        for (int i = 0; i < size; i++)
+            _storage.add(value[i]);
+        _wpos += size;
         return this;
     }
 
@@ -79,22 +87,31 @@ class Serialization
     }
 
     public Serialization Add(List list) {
-        Append(List.class, list);
+        _storage.addAll(list);
+        _wpos += list.size();
         return this;
     }
 
     public Serialization Add(Map map) {
-        Append(Map.class, map);
+        _storage.addAll(map.entrySet());
+        _wpos += map.size();
         return this;
     }
 
-    public Serialization Add(Class classic) {
-        Append(Class.class, classic);
+    public Serialization AddClass(Class classic) throws NoSuchFieldException {
+        for (int i = 0; i < classic.getFields().length; i++) {
+            System.out.println(classic.getFields()[i]);
+            System.out.println(classic.getFields()[i].getName());
+            System.out.println(classic.getFields()[i].getType());
+            System.out.println(classic.getFields()[i].toString());
+        }
+
         return this;
     }
 
     public Serialization Add(Vector vector) {
-        Append(Vector.class, vector);
+        _storage.addAll(vector);
+        _wpos += vector.size();
         return this;
     }
 
@@ -296,10 +313,6 @@ class Serialization
 
         if (clazz.isLocalClass() || clazz.isInterface() || clazz.isMemberClass())
             return clazz.getClasses().length;
-
-        if (clazz.isInstance(Class.class)) {
-            return 0;
-        }
 
         return 0;
     }
