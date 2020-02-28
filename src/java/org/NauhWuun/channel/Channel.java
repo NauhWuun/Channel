@@ -1,5 +1,6 @@
 package org.NauhWuun.channel;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +10,7 @@ public class Channel
 {
     public int ssss = 10;
 
-    public static void main(String[] args) throws NoSuchFieldException {
+    public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Serialization ser = new Serialization();
 
         int a = 10;
@@ -53,7 +54,7 @@ public class Channel
 
 class AAA
 {
-    public int asjdaskjld = 10;
+    public Integer asjdaskjld = 10;
     public String asd = "asdasdasdasd";
 
     public void set(int a) {

@@ -1,5 +1,6 @@
 package org.NauhWuun.channel;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 class Serialization
@@ -98,12 +99,15 @@ class Serialization
         return this;
     }
 
-    public Serialization AddClass(Class classic) throws NoSuchFieldException {
-        for (int i = 0; i < classic.getFields().length; i++) {
-            System.out.println(classic.getFields()[i]);
-            System.out.println(classic.getFields()[i].getName());
-            System.out.println(classic.getFields()[i].getType());
-            System.out.println(classic.getFields()[i].toString());
+    public Serialization AddClass(Class classic) {
+        try {
+            for (int i = 0; i < classic.getFields().length; i++) {
+                _storage.add(classic.getField(classic.getFields()[i].getName()).get(classic.getDeclaredConstructor().newInstance()));
+            }
+
+            _wpos += classic.getFields().length;
+        } catch (NoSuchFieldException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+            e.getMessage();
         }
 
         return this;
