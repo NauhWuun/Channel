@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Channel
+public class LocalTest
 {
     public int ssss = 10;
 
@@ -46,9 +46,6 @@ public class Channel
         ser.AddClass(AAA.class);
 
         System.out.println( ser.toStrings() );
-
-        // Serialization der = new Serialization();
-        // System.out.println(der.of());
     }
 }
 
