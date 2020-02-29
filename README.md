@@ -1,2 +1,4 @@
 # Channel
-     Binary Serialization Library simulation c-plusplus transform protocol
+     Binary Serialization Library simulation c-plusplus style transform protocol
+
+### Have Fun :)
