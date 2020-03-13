@@ -1,4 +1,4 @@
 # Channel
-     Binary Serialization Library simulation c-plusplus style transform protocol
-
+     Java Tiny Binary Serialization Library
+     
 ### Have Fun :)
