@@ -269,7 +269,7 @@ class Serialization
 		return _storage.isEmpty();
 	}
 
-    public static long sizeof(Class clazz, Object o) {
+    private static long sizeof(Class clazz, Object o) {
         if (clazz.isPrimitive()) {
             switch (clazz.getName()) {
                 default:
